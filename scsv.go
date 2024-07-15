@@ -51,6 +51,8 @@ func Parse(fileName string) (Archive, error) {
 	}
 
 	thisBannerStart, thisBannerEnd := locNextTableBanner(b)
+	a.comment = strings.Trim(string(b[:thisBannerStart]), " \n")
+
 	for thisBannerStart < thisBannerEnd {
 
 		t := new(Table)
@@ -216,7 +218,6 @@ func decodeHeader(header string) (colName string, colType string, err error) {
 	}
 
 	i := strings.Index(validTypeNames, strings.ReplaceAll(colType, " ", ""))
-	fmt.Printf("i: %d\n", i)
 	if i < 0 {
 		return "", "", fmt.Errorf("decodeHeader: %s not a valid column type", colType)
 	}

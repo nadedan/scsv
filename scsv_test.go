@@ -12,6 +12,7 @@ func TestParse(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	fmt.Printf(">%s<\n", a.comment)
 	fmt.Printf(">%s<\n", a.tables[0].name)
 	fmt.Printf(">%v<\n", a.tables[0].data[0]["Age"])
 }
