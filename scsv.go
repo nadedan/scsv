@@ -62,7 +62,7 @@ func Parse(fileName string) (Archive, error) {
 
 		tableBytes := b[thisBannerEnd : thisBannerEnd+nextBannerStart]
 
-		err = t.loadTable(tableBytes)
+		err = t.load(tableBytes)
 		if err != nil {
 			return *a, fmt.Errorf("Parse: could not load table %s: %w", t.name, err)
 		}
@@ -76,7 +76,7 @@ func Parse(fileName string) (Archive, error) {
 	return *a, nil
 }
 
-func (t *Table) loadTable(b []byte) error {
+func (t *Table) load(b []byte) error {
 	rdr := csv.NewReader(bytes.NewReader(b))
 
 	headers, err := rdr.Read()
@@ -134,7 +134,7 @@ func (t *Table) loadRow(row []string) error {
 	for i, col := range t.columns {
 		dataString := strings.Trim(row[i], " ")
 
-		dataAny, err := col.parseData(dataString)
+		dataAny, err := col.parse(dataString)
 		if err != nil {
 			return fmt.Errorf("%T.loadRow: %w", t, err)
 		}
@@ -147,7 +147,7 @@ func (t *Table) loadRow(row []string) error {
 	return nil
 }
 
-func (c Column) parseData(data string) (any, error) {
+func (c Column) parse(data string) (any, error) {
 	var dataAny any
 	var err error
 	var i int64
