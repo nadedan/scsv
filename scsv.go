@@ -13,13 +13,13 @@ import (
 
 type Archive struct {
 	comment string
-	tables  []Table
+	tables  []*Table
 }
 
 type Table struct {
 	name    string
-	columns []Column
-	data    []Row
+	columns []*Column
+	data    []*Row
 }
 
 type Column struct {
@@ -32,6 +32,18 @@ type Data = any
 
 type Row map[ColumnName]Data
 
+func (r *Row) set(colName string, value any) {
+	(*r)[colName] = value
+}
+
+func (r *Row) Value(colName string) any {
+	value, ok := (*r)[colName]
+	if !ok {
+		return nil
+	}
+	return value
+}
+
 const validTypeNames = `
 int int8 int16 int32 int64
 uint uint8 uint16 uint32 uint64
@@ -42,10 +54,19 @@ var fbRe *regexp.Regexp
 
 func init() { fbRe = regexp.MustCompile("\n-- (?P<TableName>.*) --\n") }
 
-func Parse(fileName string) (Archive, error) {
+func ParseFile(fileName string) (Archive, error) {
+	f, err := os.Open(fileName)
+	if err != nil {
+		return Archive{}, err
+	}
+
+	return Parse(f)
+}
+
+func Parse(r io.Reader) (Archive, error) {
 	a := new(Archive)
 
-	b, err := os.ReadFile("./test/test.scsv")
+	b, err := io.ReadAll(r)
 	if err != nil {
 		return *a, err
 	}
@@ -67,7 +88,7 @@ func Parse(fileName string) (Archive, error) {
 			return *a, fmt.Errorf("Parse: could not load table %s: %w", t.name, err)
 		}
 
-		a.tables = append(a.tables, *t)
+		a.tables = append(a.tables, t)
 
 		b = b[thisBannerEnd:]
 		thisBannerStart, thisBannerEnd = locNextTableBanner(b)
@@ -75,6 +96,18 @@ func Parse(fileName string) (Archive, error) {
 
 	return *a, nil
 }
+
+func (a Archive) Tables() []*Table {
+	return a.tables
+}
+
+func (a Archive) Table(name string) *Table {
+
+	return nil
+}
+
+func (t *Table) Name() string       { return t.name }
+func (t *Table) Columns() []*Column { return t.columns }
 
 func (t *Table) load(b []byte) error {
 	rdr := csv.NewReader(bytes.NewReader(b))
@@ -120,7 +153,7 @@ func (t *Table) loadHeaders(headers []string) error {
 			return fmt.Errorf("%T.loadHeaders: %w", t, err)
 		}
 
-		t.columns = append(t.columns, Column{name: colName, dataType: colType})
+		t.columns = append(t.columns, &Column{name: colName, dataType: colType})
 	}
 	return nil
 }
@@ -130,7 +163,7 @@ func (t *Table) loadRow(row []string) error {
 		return fmt.Errorf("%T.loadRow: row %v has %d elements but must have %d", t, row, len(row), len(t.columns))
 	}
 
-	r := Row{}
+	r := &Row{}
 	for i, col := range t.columns {
 		dataString := strings.Trim(row[i], " ")
 
@@ -139,7 +172,7 @@ func (t *Table) loadRow(row []string) error {
 			return fmt.Errorf("%T.loadRow: %w", t, err)
 		}
 
-		r[col.name] = dataAny
+		r.set(col.name, dataAny)
 	}
 
 	t.data = append(t.data, r)
@@ -147,6 +180,8 @@ func (t *Table) loadRow(row []string) error {
 	return nil
 }
 
+func (c Column) Name() string { return c.name }
+func (c Column) Type() string { return c.dataType }
 func (c Column) parse(data string) (any, error) {
 	var dataAny any
 	var err error

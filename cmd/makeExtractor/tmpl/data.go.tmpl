@@ -1,0 +1,7 @@
+{{ define "data" }}
+type Data struct {
+    {{ range . -}}
+    {{.Name}}s []{{.Name}}
+    {{ end }}
+}
+{{ end }}

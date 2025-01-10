@@ -7,14 +7,18 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	a, err := Parse("")
+	a, err := ParseFile("./test/test.scsv")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	fmt.Printf(">%s<\n", a.comment)
 	fmt.Printf(">%s<\n", a.tables[0].name)
-	fmt.Printf(">%v<\n", a.tables[0].data[0]["Age"])
+	fmt.Printf(">%v<\n", a.tables[0].data[0].Value("Age"))
+
+	//	for _, t := range a.Tables() {
+	//		t.
+	//	}
 }
 
 func TestLocNextTableBanner(t *testing.T) {

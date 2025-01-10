@@ -1,11 +1,10 @@
 This is a comment at the top of the file
 
--- Table1 --
+-- Person --
 Name, Age(int)
 Daniel, 38
 Bob, 27
--- EmptyTable --
--- Table2 --
+-- Thing --
 Id, Order(int32), Weight(float32)
 Cool, 400, 0.1
 Ball, 1, 12
