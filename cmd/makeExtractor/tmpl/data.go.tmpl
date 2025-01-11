@@ -4,18 +4,4 @@ type Data struct {
     {{.Name}}s []{{.Name}}
     {{ end }}
 }
-
-func (d *Data) Unmarshall(a scsv.Archive) error {
-    var t *scsv.Table
-    {{range . -}}
-    t, err = a.Table("{{.Name}}")
-    if err != nil {
-        return err
-    }
-    for _, r := range t.Rows() {
-        d.{{.Name}}s = append(d.{{.Name}}s, &{{.Name}}.Unmarshall(r))
-    }
-
-    {{end}}
-}
 {{ end }}

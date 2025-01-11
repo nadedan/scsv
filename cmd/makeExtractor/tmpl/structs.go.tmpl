@@ -5,11 +5,5 @@ type {{ .Name }} struct {
     {{ .Name }} {{ .Type }} {{ .Tag }}
     {{ end }}
 }
-
-func (s *{{.Name}}) Unmarshall(r scsv.Row) error {
-    {{ range .Fields -}}
-    s.{{.Name}} = r.Value("{{.Name}}").({{.Type}})
-    {{ end }}
-}
 {{ end }}
 {{ end }}
