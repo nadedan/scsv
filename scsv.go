@@ -19,7 +19,7 @@ type Archive struct {
 type Table struct {
 	name    string
 	columns []*Column
-	data    []*Row
+	rows    []*Row
 }
 
 type Column struct {
@@ -102,12 +102,17 @@ func (a Archive) Tables() []*Table {
 }
 
 func (a Archive) Table(name string) *Table {
-
+	for _, t := range a.tables {
+		if name == t.name {
+			return t
+		}
+	}
 	return nil
 }
 
 func (t *Table) Name() string       { return t.name }
 func (t *Table) Columns() []*Column { return t.columns }
+func (t *Table) Rows() []*Row       { return t.rows }
 
 func (t *Table) load(b []byte) error {
 	rdr := csv.NewReader(bytes.NewReader(b))
@@ -132,7 +137,7 @@ func (t *Table) load(b []byte) error {
 		}
 		loadRowErr := t.loadRow(row)
 		if loadRowErr != nil {
-			return fmt.Errorf("%T.loadTable: could not load row %d: %w", t, len(t.data)+1, loadRowErr)
+			return fmt.Errorf("%T.loadTable: could not load row %d: %w", t, len(t.rows)+1, loadRowErr)
 		}
 	}
 
@@ -175,7 +180,7 @@ func (t *Table) loadRow(row []string) error {
 		r.set(col.name, dataAny)
 	}
 
-	t.data = append(t.data, r)
+	t.rows = append(t.rows, r)
 
 	return nil
 }

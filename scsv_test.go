@@ -6,6 +6,34 @@ import (
 	"testing"
 )
 
+func TestUnmarshall(t *testing.T) {
+	f, err := os.Open("./test/test.scsv")
+	if err != nil {
+		t.Fatal(err)
+	}
+	type Thing struct {
+		Id     string
+		Order  int32
+		Weight float32
+	}
+	type Person struct {
+		Name string
+		Age  int
+	}
+	type Data struct {
+		Persons []Person
+		Things  []Thing
+	}
+
+	d := Data{}
+
+	err = Unmarshall(f, &d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("d: \n%+v", d)
+}
+
 func TestParse(t *testing.T) {
 	a, err := ParseFile("./test/test.scsv")
 	if err != nil {
@@ -14,7 +42,7 @@ func TestParse(t *testing.T) {
 
 	fmt.Printf(">%s<\n", a.comment)
 	fmt.Printf(">%s<\n", a.tables[0].name)
-	fmt.Printf(">%v<\n", a.tables[0].data[0].Value("Age"))
+	fmt.Printf(">%v<\n", a.tables[0].rows[0].Value("Age"))
 
 	//	for _, t := range a.Tables() {
 	//		t.
