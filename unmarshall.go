@@ -30,9 +30,6 @@ func Unmarshall(r io.Reader, v any) error {
 			continue
 		}
 
-		fmt.Println(f.Kind())
-
-		fmt.Println(tableName)
 		table := a.Table(tableName)
 		if table == nil {
 			panic("nil table")

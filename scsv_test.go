@@ -7,7 +7,7 @@ import (
 )
 
 func TestUnmarshall(t *testing.T) {
-	f, err := os.Open("./test/test.scsv")
+	f, err := os.Open("./testdata/people.scsv")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,7 +35,7 @@ func TestUnmarshall(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-	a, err := ParseFile("./test/test.scsv")
+	a, err := ParseFile("./testdata/people.scsv")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -50,7 +50,7 @@ func TestParse(t *testing.T) {
 }
 
 func TestLocNextTableBanner(t *testing.T) {
-	b, err := os.ReadFile("./test/test.scsv")
+	b, err := os.ReadFile("./testdata/people.scsv")
 	if err != nil {
 		t.Errorf("could not read file: %s", err)
 	}
@@ -61,7 +61,7 @@ func TestLocNextTableBanner(t *testing.T) {
 }
 
 func TestAllTableBanners(t *testing.T) {
-	b, err := os.ReadFile("./test/test.scsv")
+	b, err := os.ReadFile("./testdata/people.scsv")
 	if err != nil {
 		t.Errorf("could not read file: %s", err)
 	}
@@ -78,7 +78,7 @@ func TestAllTableBanners(t *testing.T) {
 }
 
 func TestTableNameParse(t *testing.T) {
-	b, err := os.ReadFile("./test/test.scsv")
+	b, err := os.ReadFile("./testdata/people.scsv")
 	if err != nil {
 		t.Errorf("could not read file: %s", err)
 	}
